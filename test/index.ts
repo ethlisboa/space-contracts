@@ -1,6 +1,6 @@
-import { expect, util } from "chai";
+import { expect } from "chai";
 import { ethers } from "hardhat";
-import {Contract, ContractTransaction} from "ethers";
+import {Contract, ContractTransaction, utils} from "ethers";
 import { deploy, deployer } from "../util/deployment";
 
 // Initialized before tests run.
@@ -77,7 +77,10 @@ describe("Tests", function () {
 
       // build an extractor on an existing planet
       const celestialID = await Galaxy.getCelestialID(5, 5);
-      await run(Planet.build(player, celestialID));
+
+      await expect(Planet.build(player, celestialID))
+          // note: also works without the params
+          .to.emit(Planet, 'Build(uint128,uint128,address,uint8)');
 
       async function test (kind: ItemKind) {
         const accrualRate = await Planet.accrualRate();
