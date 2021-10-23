@@ -8,9 +8,9 @@ import "./ResourceCelestial.sol";
 /** A planet is a wood-producing celestial. */
 contract Planet is ResourceCelestial {
     constructor (Items _ItemsContract)
-            ResourceCelestial(
-                _ItemsContract,
-                CelestialKind.Planet,
-                ItemKind.TerrestrialWood,
-                1) {}
+        ResourceCelestial(
+            _ItemsContract,
+            CelestialKind.Planet,
+            ItemKind.TerrestrialWood,
+            1) {}
 }
