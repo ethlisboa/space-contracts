@@ -46,7 +46,6 @@ const config: HardhatUserConfig = {
   namedAccounts: {
     deployer: {
       default: 0, // first account
-      "optimistic": "0xCAFED9eF335b3d3ccC3826D659B1666b73E20132"
     },
     feeCollector:{
     default: 1, // here this will by default take the second account as feeCollector (so in the test this will be a different account than the deployer)
