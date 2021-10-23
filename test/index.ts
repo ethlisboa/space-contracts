@@ -1,44 +1,15 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
-import {Contract, ContractTransaction, utils} from "ethers";
-import { deploy, deployer } from "../util/deployment";
+import {deploy, run, deployer, now} from "../util/helpers";
+import {ItemKind, CelestialKind} from "../util/enums";
 
 // Initialized before tests run.
 let clock: any;
-
-async function run(txPromise: Promise<ContractTransaction>): Promise<any> {
-  const tx = await txPromise;
-  return await tx.wait();
-}
 
 async function elapseBlocks(amount: number) {
   for (let i = 0; i < amount; i++) {
     const tx = await clock.tick();
     await tx.wait();
   }
-}
-
-function now(): Promise<number> {
-  return ethers.provider.getBlockNumber();
-}
-
-// This is copied from `Items.sol` and must be kept in sync manually.
-// This is a fundamental limitation of typechain (because enum info is not in the ABI).
-enum ItemKind {
-  IronOre,
-  TerrestrialWood,
-  SpaceRaccoon
-}
-
-// This is copied from `Galaxy.sol` and must be kept in sync manually.
-enum CelestialKind {
-  Planet,     // produces TerrestrialWood
-  Asteroid,   // produces IronOre
-  Moon        // produces SpaceRaccoon
-}
-
-function balance(Items: Contract, player: string, itemKind: ItemKind): Promise<number> {
-  return Items.balanceOf(player, ItemKind.TerrestrialWood);
 }
 
 describe("Tests", function () {

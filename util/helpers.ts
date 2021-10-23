@@ -1,5 +1,5 @@
 import { ethers } from "hardhat";
-import { Contract } from "ethers";
+import {Contract, ContractTransaction} from "ethers";
 
 async function _deploy(contractName: string, verbose: boolean, ...args: any): Promise<Contract> {
   const factory = await ethers.getContractFactory(contractName);
@@ -19,4 +19,13 @@ export function deployVerbose(contractName: string, ...args: any): Promise<Contr
 
 export async function deployer(): Promise<string> {
   return (await ethers.getSigners())[0].address;
+}
+
+export async function run(txPromise: Promise<ContractTransaction>): Promise<any> {
+  const tx = await txPromise;
+  return await tx.wait();
+}
+
+export function now(): Promise<number> {
+  return ethers.provider.getBlockNumber();
 }
