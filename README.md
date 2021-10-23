@@ -27,4 +27,5 @@ their specific kind.
 ## Events
 
 - `event Build(uint128 x, uint128 y, address player, CelestialKind kind);`
+  - signature: `Build(uint128, uint128, address, uint8)` 
   - emitted whenever a building is built on a celestial (currently: building extractors on resource celestials)
