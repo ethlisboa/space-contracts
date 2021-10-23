@@ -1,4 +1,4 @@
-import { deploy } from "../util/deployment";
+import { deployVerbose as deploy } from "../util/deployment";
 
 async function main() {
   const items = await deploy("Items");

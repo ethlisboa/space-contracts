@@ -1,17 +1,17 @@
 import { expect, util } from "chai";
 import { ethers } from "hardhat";
+import {Contract, ContractTransaction} from "ethers";
 import { deploy, deployer } from "../util/deployment";
 
-const clockPromise = deploy("Clock");
+// Initialized before tests run.
+let clock: any;
 
-// TODO what's the type of the transaction?
-async function run(txPromise: Promise<any>) {
+async function run(txPromise: Promise<ContractTransaction>): Promise<any> {
   const tx = await txPromise;
   return await tx.wait();
 }
 
 async function elapseBlocks(amount: number) {
-  const clock = await clockPromise;
   for (let i = 0; i < amount; i++) {
     const tx = await clock.tick();
     await tx.wait();
@@ -22,38 +22,79 @@ function now(): Promise<number> {
   return ethers.provider.getBlockNumber();
 }
 
+// This is copied from `Items.sol` and must be kept in sync manually.
+// This is a fundamental limitation of typechain (because enum info is not in the ABI).
+enum ItemKind {
+  IronOre,
+  TerrestrialWood,
+  SpaceRaccoon
+}
 
-describe("PlanetOre", function () {
-  it("Balance starts empty, and accrues ore over time", async function () {
-    const player = deployer();
-    const ore = 0;
+// This is copied from `Galaxy.sol` and must be kept in sync manually.
+enum CelestialKind {
+  Planet,     // produces TerrestrialWood
+  Asteroid,   // produces IronOre
+  Moon        // produces SpaceRaccoon
+}
 
-    // deploy contracts
-    const items = await deploy("Items");
-    const planetOre = await deploy("PlanetOre", items.address);
-    await run(items.setMinter(ore, planetOre.address));
+function balance(Items: Contract, player: string, itemKind: ItemKind): Promise<number> {
+  return Items.balanceOf(player, ItemKind.TerrestrialWood);
+}
 
-    // initial balance is 0
-    expect(await items.balanceOf(player, ore)).to.equal(0);
+describe("Tests", function () {
+  before(async function () {
+    clock = await deploy("Clock");
+  });
 
-    // build an extractor on the an arbitrary planet
-    const planetID = await planetOre.getPlanetID(42, 66);
-    await run(planetOre.build(player, planetID));
+  describe("Scaffolding", function (){
+    it("Is able to elapse blocks in hardhat", async function () {
+      const elapse = 3;
+      const before = await now();
+      await elapseBlocks(elapse);
+      let after = await now();
+      expect(after).to.equal(before + elapse);
+    })
+  });
 
-    // elapse given number of blocks, and check it worked
-    const elapse = 3;
-    const before = await now();
-    await elapseBlocks(elapse);
-    let after = await now();
-    expect(after).to.equal(before + elapse);
+  describe("PlanetOre", function () {
+    it("Balance starts empty, and accrues resources over time", async function () {
+      const player = deployer();
 
-    // check that we collect the expected amount (accrual rate is 1)
-    const lastUpdate = await planetOre.lastUpdate(planetID);
-    await run(planetOre.collect(player, planetID));
-    after = await now();
-    expect(await planetOre.lastUpdate(planetID)).to.equal(after);
-    expect(await items.balanceOf(player, ore)).to.equal(after - lastUpdate);
+      // deploy contracts
+      const Galaxy = await deploy("Galaxy");
+      const Items  = await deploy("Items");
+      const Planet = await deploy("Planet", Items.address);
+      await run(Items.setMinter(ItemKind.TerrestrialWood, Planet.address));
+      await run(Galaxy.setManager(CelestialKind.Planet, Planet.address));
 
-    // TODO check that we can do this again after the first update
+      // add some planets
+      await run(Galaxy.addCelestial(CelestialKind.Planet,  5,  5));
+      await run(Galaxy.addCelestial(CelestialKind.Planet, 10, 10));
+      await run(Galaxy.addCelestial(CelestialKind.Planet, 15, 15));
+
+      // initial balance is 0
+      expect(await Items.balanceOf(player, ItemKind.TerrestrialWood)).to.equal(0);
+
+      // build an extractor on an existing planet
+      const celestialID = await Galaxy.getCelestialID(5, 5);
+      await run(Planet.build(player, celestialID));
+
+      async function test (kind: ItemKind) {
+        const accrualRate = await Planet.accrualRate();
+        const lastUpdate  = await Planet.lastUpdate(celestialID);
+        const lastBalance = (await Items.balanceOf(player, kind)).toNumber();
+        await elapseBlocks(3);
+        await run(Planet.collect(player, celestialID));
+        const after = await now();
+        expect(await Planet.lastUpdate(celestialID)).to.equal(after);
+        const newBalance = (await Items.balanceOf(player, kind)).toNumber();
+        expect(newBalance).to.equal(lastBalance + accrualRate * (after - lastUpdate));
+      }
+
+      // check that we collect the expected amount
+      await test(ItemKind.TerrestrialWood);
+      // check that it works the second time around too
+      await test(ItemKind.TerrestrialWood);
+    });
   });
 });
