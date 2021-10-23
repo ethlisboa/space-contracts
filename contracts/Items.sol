@@ -7,9 +7,20 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 // The different kind of resources and items.
 enum ItemKind {
+    // Resources
     IronOre,
     TerrestrialWood,
-    SpaceRaccoon
+    SpaceRaccoon,
+    // Factory-produced items
+    Charcoal,
+    Graphite,
+    PureDiamonds,
+    BlackSteel,
+    RaccoonLeather,
+    SaberHandle,
+    EnergyCrystal,
+    // Found items
+    EpicOpal
 }
 
 contract Items is ERC1155("https://game.example/api/item/{id}.json"), Ownable  {

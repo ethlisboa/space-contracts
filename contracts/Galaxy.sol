@@ -7,9 +7,14 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // =================================================================================================
 
 enum CelestialKind {
-    Planet,     // produces TerrestrialWood
-    Asteroid,   // produces IronOre
-    Moon        // produces SpaceRaccoon
+    Planet,                 // produces TerrestrialWood
+    Asteroid,               // produces IronOre
+    Moon,                   // produces SpaceRaccoon
+    SpaceOven,              // produces Charcoal
+    GraphiteLabs,           // produces Graphite
+    DiamondCuttingStation,  // produces PureDiamonds
+    CyberFoundry,           // produces BlackSteel
+    RaccoonProcessingUnit   // produces RaccoonLeather
 }
 
 // =================================================================================================
