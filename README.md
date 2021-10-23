@@ -1,4 +1,6 @@
-# spaceXcalibur Contracts
+# SpaceXcalibur Contracts
+
+The optimistic Solidity smart contracts for SpaceXcalibur. 
 
 - Install with `npm install`
 - Deploy with `npm run deploy`
