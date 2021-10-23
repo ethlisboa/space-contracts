@@ -1,46 +1,30 @@
-# Advanced Sample Hardhat Project
+# spaceXcalibur Contracts
 
-This project demonstrates an advanced Hardhat use case, integrating other tools commonly used alongside Hardhat in the ecosystem.
+- Install with `npm install`
+- Deploy with `npm run deploy`
 
-The project comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts. It also comes with a variety of other tools, preconfigured to work with the project code.
+## Architecture
 
-Try running some of the following tasks:
+The game map contains "celestials" (celestial objects). Each kind of celestial object is managed
+by a contract. The contract hierarchy is:
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-npx hardhat help
-REPORT_GAS=true npx hardhat test
-npx hardhat coverage
-npx hardhat run scripts/deploy.ts
-TS_NODE_FILES=true npx ts-node scripts/deploy.ts
-npx eslint '**/*.{js,ts}'
-npx eslint '**/*.{js,ts}' --fix
-npx prettier '**/*.{json,sol,md}' --check
-npx prettier '**/*.{json,sol,md}' --write
-npx solhint 'contracts/**/*.sol'
-npx solhint 'contracts/**/*.sol' --fix
-```
+- `Celestial` - common ancestor for all celestials
+  - `ResourceCelestial` - ancestor for celestials that generate resources to be collected
+    - `Planet` - generates terrestrial wood
 
-# Etherscan verification
+The contract for a specific kind of celestial (e.g. `Planet`) stores the data for all celestials
+of that particular kind. It also lets player interact with the celestial. In the case of `Planet`,
+the player can build an extractor on the planet (to generate terrestrial wood) and then collect
+the accrued wood at a later point in time.
 
-To try out Etherscan verification, you first need to deploy a contract to an Ethereum network that's supported by Etherscan, such as Ropsten.
+The `Items` contract implements EIP-1155 (multi-tokens) and holds player balances for every resource
+and items in the game.
 
-In this project, copy the .env.example file to a file named .env, and then edit it to fill in the details. Enter your Etherscan API key, your Ropsten node URL (eg from Alchemy), and the private key of the account which will send the deployment transaction. With a valid .env file in place, first deploy your contract:
+The `Galaxy` contract lists all existing celestials — it's used to load the game map for players.
+These celestials are not indexed in any way, their attributes are stored in the contract for
+their specific kind.
 
-```shell
-hardhat run --network ropsten scripts/sample-script.ts
-```
+## Events
 
-Then, copy the deployment address and paste it in to replace `DEPLOYED_CONTRACT_ADDRESS` in this command:
-
-```shell
-npx hardhat verify --network ropsten DEPLOYED_CONTRACT_ADDRESS "Hello, Hardhat!"
-```
-
-# Performance optimizations
-
-For faster runs of your tests and scripts, consider skipping ts-node's type checking by setting the environment variable `TS_NODE_TRANSPILE_ONLY` to `1` in hardhat's environment. For more details see [the documentation](https://hardhat.org/guides/typescript.html#performance-optimizations).
+- `event Build(uint128 x, uint128 y, address player, CelestialKind kind);`
+  - emitted whenever a building is built on a celestial (currently: building extractors on resource celestials)
