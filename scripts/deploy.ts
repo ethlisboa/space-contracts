@@ -1,9 +1,18 @@
-import { deployVerbose as deploy } from "../util/deployment";
+import {deployVerbose as deploy,run} from "../util/helpers";
+import {CelestialKind, ItemKind} from "../util/enums";
 
 async function main() {
-  const items = await deploy("Items");
-  const planetOre = await deploy("PlanetOre", items.address);
-  await items.setMinter(0, planetOre.address);
+  // deploy contracts
+  const Galaxy = await deploy("Galaxy");
+  const Items  = await deploy("Items");
+  const Planet = await deploy("Planet", Items.address);
+  await run(Items.setMinter(ItemKind.TerrestrialWood, Planet.address));
+  await run(Galaxy.setManager(CelestialKind.Planet, Planet.address));
+
+  // add some planets
+  await run(Galaxy.addCelestial(CelestialKind.Planet,  5,  5));
+  await run(Galaxy.addCelestial(CelestialKind.Planet, 10, 10));
+  await run(Galaxy.addCelestial(CelestialKind.Planet, 15, 15));
 }
 
 main().catch((error) => {
