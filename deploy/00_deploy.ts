@@ -12,20 +12,17 @@ async function run(txPromise: Promise<ContractTransaction>): Promise<any> {
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {deployments, getNamedAccounts} = hre;
     const {deploy, execute} = deployments;
-    const [deployer, player] = await hre.ethers.getSigners();
-
-    // Use this to define the deployer address for real deployment.
-    // const {deployer, player} = await getNamedAccounts();
+    const {deployer} = await getNamedAccounts();
 
     const txOptions: TxOptions = {
-        from: deployer.address,
+        from: deployer,
         autoMine: true,
         log: true
     };
 
     function depOptions (...args: any): DeployOptions {
         return {
-            from: deployer.address,
+            from: deployer,
             autoMine: true,
             log: true,
             args: [... args]
