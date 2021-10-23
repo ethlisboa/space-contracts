@@ -115,3 +115,6 @@ artifacts
 
 # IntelliJ config
 .idea
+
+# Deployments from hardhat-deploy
+deployments

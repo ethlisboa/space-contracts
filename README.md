@@ -1,7 +1,9 @@
 # spaceXcalibur Contracts
 
 - Install with `npm install`
-- Deploy with `npm run deploy`
+- Test with `npx hardhat test`
+- Deploy to local network with `npx hardhat deploy --network localhost`
+- Deploy to Optimistic Kovan testnet with `npx hardhat deploy --network optimistic`
 
 ## Architecture
 
