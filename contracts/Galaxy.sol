@@ -41,7 +41,7 @@ struct CelestialMapEntry {
  */
 contract Galaxy is Ownable {
 
-    CelestialMapEntry[] public map;
+    CelestialMapEntry[] celestials;
 
     mapping (CelestialKind => Celestial) celestialManagers;
 
@@ -51,11 +51,23 @@ contract Galaxy is Ownable {
         celestialManagers[kind] = manager;
     }
 
-    function addCelestial(CelestialKind kind, uint128 x, uint128 y) external onlyOwner {
-        // TODO can create the structure directly in javascript?
+    function addCelestial(CelestialKind kind, uint128 x, uint128 y) public onlyOwner {
         CelestialMapEntry memory entry = CelestialMapEntry(kind, x, y);
-        map.push(entry);
+        celestials.push(entry);
         celestialManagers[kind].addedExternally(entry);
+    }
+
+    function addCelestials(
+            CelestialKind[] calldata kinds, uint128[] calldata xs, uint128[] calldata ys)
+            external onlyOwner {
+        require(kinds.length == xs.length && xs.length == ys.length,
+            "arrays have different lengths");
+        for (uint i = 0; i < xs.length; ++i)
+            addCelestial(kinds[i], xs[i], ys[i]);
+    }
+
+    function getCelestials() external view returns (CelestialMapEntry[] memory) {
+        return celestials;
     }
 
     // ---------------------------------------------------------------------------------------------

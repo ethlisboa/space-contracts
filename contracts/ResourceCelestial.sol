@@ -45,6 +45,15 @@ abstract contract ResourceCelestial is Celestial {
         return data(celestialID).lastUpdate;
     }
 
+    // Returns the amount of resources accrued from this celestial since the last time it was
+    // updated (i.e. the last time `collect` was called).
+    function accruedResources(address player, uint celestialID) external view returns (uint) {
+        CelestialData storage data = data(celestialID);
+        require(data.owner == player, "Celestial is not owned by player");
+        uint elapsed = block.number - data.lastUpdate;
+        return accrualRate * elapsed;
+    }
+
     // Updates the player balance with the resources accrued from this celestial since the last time
     // it was updated (i.e. the last time this method was called).
     function collect(address player, uint celestialID) external {
@@ -53,6 +62,7 @@ abstract contract ResourceCelestial is Celestial {
         uint elapsed = block.number - data.lastUpdate;
         uint amount = accrualRate * elapsed;
         data.lastUpdate = block.number;
+        // TODO handle reentrancy attack
         ItemsContract.mint(player, itemKind, amount, bytes(""));
     }
 
