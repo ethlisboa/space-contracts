@@ -1,9 +1,9 @@
 //SPDX-License-Identifier: Apache
 pragma solidity ^0.8.0;
 
-import "./Galaxy.sol";
-import "./Items.sol";
-import "./FactoryCelestial.sol";
+import "../Galaxy.sol";
+import "../Items.sol";
+import "../FactoryCelestial.sol";
 
 /** A planet is a wood-producing celestial. */
 contract SpaceOven is FactoryCelestial {

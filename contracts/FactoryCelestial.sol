@@ -56,5 +56,14 @@ abstract contract FactoryCelestial is Celestial {
     function produce(address player, uint celestialID) external {
         CelestialData storage data = data(celestialID);
         require(data.owner == player, "Celestial is not owned by player");
+        // TODO handle reentrancy attack
+        for (uint i = 0; i < inputs.length; i++) {
+            uint balance = ItemsContract.balanceOf(player, uint(inputs[i].kind));
+            require(balance < inputs[i].count, "insufficient balance");
+        }
+        for (uint i = 0; i < inputs.length; i++)
+            ItemsContract.burn(player, inputs[i].kind, inputs[i].count);
+        for (uint i = 0; i < outputs.length; i++)
+            ItemsContract.mint(player, outputs[i].kind, outputs[i].count, bytes(""));
     }
 }

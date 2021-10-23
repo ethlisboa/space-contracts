@@ -35,4 +35,9 @@ contract Items is ERC1155("https://game.example/api/item/{id}.json"), Ownable  {
         require(msg.sender == minters[kind], "wrong minter");
         _mint(player, uint(kind), amount, data);
     }
+
+    function burn(address player, ItemKind kind, uint amount) external {
+        require(msg.sender == minters[kind], "wrong minter");
+        _burn(player, uint(kind), amount);
+    }
 }
