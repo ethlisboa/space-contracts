@@ -1,9 +1,8 @@
-import { Celestial } from "./../typechain/Celestial.d";
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { DeployFunction } from "hardhat-deploy/types";
-import { DeployOptions, TxOptions } from "hardhat-deploy/dist/types";
 import { ContractTransaction } from "ethers";
-import { ItemKind, CelestialKind } from "../util/enums";
+import { DeployOptions, TxOptions } from "hardhat-deploy/dist/types";
+import { DeployFunction } from "hardhat-deploy/types";
+import { HardhatRuntimeEnvironment } from "hardhat/types";
+import { CelestialKind, ItemKind } from "../util/enums";
 
 async function run(txPromise: Promise<ContractTransaction>): Promise<any> {
   const tx = await txPromise;
@@ -33,6 +32,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const Galaxy = await deploy("Galaxy", depOptions());
   const Items = await deploy("Items", depOptions());
   const Planet = await deploy("Planet", depOptions(Items.address));
+  const Asteroid = await deploy("Asteroid", depOptions(Items.address));
+  const Moon = await deploy("Moon", depOptions(Items.address));
   const SpaceOven = await deploy("SpaceOven", depOptions(Items.address));
 
   await execute(
@@ -56,6 +57,21 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     "setManager",
     CelestialKind.SpaceOven,
     SpaceOven.address
+  );
+
+  await execute(
+    "Galaxy",
+    txOptions,
+    "setManager",
+    CelestialKind.Asteroid,
+    Asteroid.address
+  );
+  await execute(
+    "Galaxy",
+    txOptions,
+    "setManager",
+    CelestialKind.Moon,
+    Moon.address
   );
 
   // add some planets

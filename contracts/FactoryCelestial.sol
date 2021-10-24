@@ -23,10 +23,10 @@ abstract contract FactoryCelestial is Celestial {
     ItemKind public itemKind;
 
     // The input items necessary to use this factory along with their quantities.
-    FactoryPair[] inputs;
+    FactoryPair[] public inputs;
 
     // The output items necessary to use this factory along with their quantities.
-    FactoryPair[] outputs;
+    FactoryPair[] public outputs;
 
     // Data storage for all celestial of the kind handled by this contract.
     mapping (uint => CelestialData) dataMap;
@@ -43,6 +43,7 @@ abstract contract FactoryCelestial is Celestial {
     }
 
     function addedExternally(CelestialMapEntry memory mapEntry) external override {
+        // TODO ACCESS CONTROL
         // NOTE: We do not check for existence here, meaning the galaxy owner can use
         // `Galaxy#addCelestial` to override existing celestials.
         dataMap[getCelestialID(mapEntry.x, mapEntry.y)] = CelestialData(address(0), block.number);
@@ -59,11 +60,17 @@ abstract contract FactoryCelestial is Celestial {
         // TODO handle reentrancy attack
         for (uint i = 0; i < inputs.length; i++) {
             uint balance = ItemsContract.balanceOf(player, uint(inputs[i].kind));
-            require(balance < inputs[i].count, "insufficient balance");
+            require(balance >= inputs[i].count, "insufficient balance");
         }
         for (uint i = 0; i < inputs.length; i++)
             ItemsContract.burn(player, inputs[i].kind, inputs[i].count);
         for (uint i = 0; i < outputs.length; i++)
             ItemsContract.mint(player, outputs[i].kind, outputs[i].count, bytes(""));
+    }
+
+    // TODO this is a crutch for testing to be removed - also unsafe
+    function setOwner(address player, uint celestialID) external {
+        CelestialData storage data = data(celestialID);
+        data.owner = player;
     }
 }
