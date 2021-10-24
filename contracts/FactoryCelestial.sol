@@ -46,7 +46,7 @@ abstract contract FactoryCelestial is Celestial {
         // TODO ACCESS CONTROL
         // NOTE: We do not check for existence here, meaning the galaxy owner can use
         // `Galaxy#addCelestial` to override existing celestials.
-        dataMap[getCelestialID(mapEntry.x, mapEntry.y)] = CelestialData(address(0), block.number);
+        // dataMap[getCelestialID(mapEntry.x, mapEntry.y)] = CelestialData(address(0), block.number);
     }
 
     // Return the block number at which the celestial was last updated.
