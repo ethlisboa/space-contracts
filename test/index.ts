@@ -27,7 +27,7 @@ describe("Tests", function () {
     })
   });
 
-  describe("PlanetOre", function () {
+  describe("Player interaction", function () {
     it("Balance starts empty, and accrues resources over time", async function () {
       const player = deployer();
 

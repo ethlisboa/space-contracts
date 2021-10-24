@@ -1,13 +1,7 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 import { DeployOptions, TxOptions } from "hardhat-deploy/dist/types";
-import { ContractTransaction } from "ethers";
-import { ItemKind, CelestialKind } from "../util/enums";
-
-async function run(txPromise: Promise<ContractTransaction>): Promise<any> {
-  const tx = await txPromise;
-  return await tx.wait();
-}
+import { CelestialKind } from "../util/enums";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, getNamedAccounts } = hre;
@@ -29,23 +23,20 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     };
   }
 
-  // deploy contracts
   const Galaxy = await deploy("Galaxy", depOptions());
-  const Items = await deploy("Items", depOptions());
-  const Planet = await deploy("Planet", depOptions(Items.address));
-  const Asteroid = await deploy("Asteroid", depOptions(Items.address));
-  const Moon = await deploy("Moon", depOptions(Items.address));
-  const SpaceOven = await deploy("SpaceOven", depOptions(Items.address));
+  const Items  = await deploy("Items",  depOptions());
 
-  // set authorizations
-  await execute("Items", txOptions, "authorize", Planet.address);
-  await execute("Items", txOptions, "authorize", Asteroid.address);
-  await execute("Items", txOptions, "authorize", Moon.address);
-  await execute("Items", txOptions, "authorize", SpaceOven.address);
-  await execute("Galaxy", txOptions, "setManager", CelestialKind.Planet, Planet.address);
-  await execute("Galaxy", txOptions, "setManager", CelestialKind.Asteroid, Asteroid.address);
-  await execute("Galaxy", txOptions, "setManager", CelestialKind.Moon, Moon.address);
-  await execute("Galaxy", txOptions, "setManager", CelestialKind.SpaceOven, SpaceOven.address);
+  // deploy celestial contract and set authorizations
+  const celestialNames = [
+      "Planet", "Asteroid", "Moon", "SpaceOven", "CyberFoundry", "GraphiteLabs",
+      "DiamondCuttingStation", "RaccoonProcessingUnit"];
+
+  for (let name of celestialNames) {
+    const contract = await deploy(name, depOptions(Items.address));
+    await execute("Items", txOptions, "authorize", contract.address);
+    await execute("Galaxy", txOptions, "setManager",
+        CelestialKind[name as keyof typeof CelestialKind], contract.address);
+  }
 
   // add some planets
   const map: {kind: number; x: number; y: number}[] = require("../galaxy.json");

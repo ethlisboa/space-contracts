@@ -5,7 +5,7 @@ import "../Galaxy.sol";
 import "../Items.sol";
 import "../FactoryCelestial.sol";
 
-/** A planet is a wood-producing celestial. */
+/** Turns wood into charchoal. */
 contract SpaceOven is FactoryCelestial {
     constructor (Items _ItemsContract)
             FactoryCelestial(_ItemsContract, CelestialKind.SpaceOven) {

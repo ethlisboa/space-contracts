@@ -10,7 +10,7 @@ export enum ItemKind {
     // Factory-produced items
     Charcoal,
     Graphite,
-    PureDiamonds,
+    PureDiamond,
     BlackSteel,
     RaccoonLeather,
     SaberHandle,
