@@ -48,7 +48,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   await execute("Galaxy", txOptions, "setManager", CelestialKind.SpaceOven, SpaceOven.address);
 
   // add some planets
-  const map: {kind: number; x: number; y: number}[] = require("./galaxy.json");
+  const map: {kind: number; x: number; y: number}[] = require("../galaxy.json");
   let kinds = [];
   let xs = [];
   let ys = [];
