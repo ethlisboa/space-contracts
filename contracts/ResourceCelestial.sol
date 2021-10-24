@@ -34,10 +34,10 @@ abstract contract ResourceCelestial is Celestial {
         return dataMap[celestialID];
     }
 
-    function addedExternally(CelestialMapEntry memory mapEntry) external override {
+    function addedExternally(uint id, CelestialMapEntry memory mapEntry) external override {
         // NOTE: We do not check for existence here, meaning the galaxy owner can use
         // `Galaxy#addCelestial` to override existing celestials.
-        // dataMap[] = CelestialData(address(0), block.number);
+        dataMap[id] = CelestialData(address(0), block.number);
     }
 
     // Return the block number at which the celestial was last updated.
@@ -49,7 +49,7 @@ abstract contract ResourceCelestial is Celestial {
     // updated (i.e. the last time `collect` was called).
     function accruedResources(address player, uint celestialID) external view returns (uint) {
         CelestialData storage data = data(celestialID);
-        require(data.owner == player, "Celestial is not owned by player");
+        // require(data.owner == player, "Celestial is not owned by player");
         uint elapsed = block.number - data.lastUpdate;
         return accrualRate * elapsed;
     }
@@ -58,7 +58,7 @@ abstract contract ResourceCelestial is Celestial {
     // it was updated (i.e. the last time this method was called).
     function collect(address player, uint celestialID) external {
         CelestialData storage data = data(celestialID);
-        require(data.owner == player, "Celestial is not owned by player");
+        // require(data.owner == player, "Celestial is not owned by player");
         uint elapsed = block.number - data.lastUpdate;
         uint amount = accrualRate * elapsed;
         data.lastUpdate = block.number;

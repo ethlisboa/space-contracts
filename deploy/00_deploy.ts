@@ -36,37 +36,37 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const Moon = await deploy("Moon", depOptions(Items.address));
   const SpaceOven = await deploy("SpaceOven", depOptions(Items.address));
 
-//   await execute("Items", txOptions, "authorize", Planet.address);
-//   await execute(
-//     "Galaxy",
-//     txOptions,
-//     "setManager",
-//     CelestialKind.Planet,
-//     Planet.address
-//   );
+  await execute("Items", txOptions, "authorize", Planet.address);
+  await execute(
+    "Galaxy",
+    txOptions,
+    "setManager",
+    CelestialKind.Planet,
+    Planet.address
+  );
 
-//   await execute(
-//     "Galaxy",
-//     txOptions,
-//     "setManager",
-//     CelestialKind.SpaceOven,
-//     SpaceOven.address
-//   );
+  await execute(
+    "Galaxy",
+    txOptions,
+    "setManager",
+    CelestialKind.SpaceOven,
+    SpaceOven.address
+  );
 
-//   await execute(
-//     "Galaxy",
-//     txOptions,
-//     "setManager",
-//     CelestialKind.Asteroid,
-//     Asteroid.address
-//   );
-//   await execute(
-//     "Galaxy",
-//     txOptions,
-//     "setManager",
-//     CelestialKind.Moon,
-//     Moon.address
-//   );
+  await execute(
+    "Galaxy",
+    txOptions,
+    "setManager",
+    CelestialKind.Asteroid,
+    Asteroid.address
+  );
+  await execute(
+    "Galaxy",
+    txOptions,
+    "setManager",
+    CelestialKind.Moon,
+    Moon.address
+  );
 
   // add some planets
   const map: {

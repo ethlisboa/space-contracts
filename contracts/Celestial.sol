@@ -18,7 +18,7 @@ struct CelestialData {
  */
 abstract contract Celestial {
 
-    event Build(uint128 x, uint128 y, address player, CelestialKind kind);
+    event Build(uint celestialID, address player, CelestialKind kind);
 
     CelestialKind public kind;
 
@@ -38,26 +38,8 @@ abstract contract Celestial {
         return _data;
     }
 
-    // Lets the frontend compute a celestial object ID from its coordinates.
-    // To query this off-chain, use `Galaxy#getCelestialID`
-    function getCelestialID(uint x, uint y) pure internal returns (uint) {
-        return x << 128 + y;
-    }
-
-    // Returns the x coordinate of the celestial object given its ID.
-    // To query this off-chain, use `Galaxy#celestialX`
-    function celestialX(uint celestialID) pure internal returns (uint128) {
-        return uint128(celestialID >> 128);
-    }
-
-    // Returns the y coordinate of the celestial object given its ID.
-    // To query this off-chain, use `Galaxy#celestialX`
-    function celestialY(uint celestialID) pure internal returns (uint128) {
-        return uint128((celestialID << 128) >> 128);
-    }
-
     // Called when a celestial is added by the galaxy owner via `Galaxy#addCelestial`
-    function addedExternally(CelestialMapEntry memory mapEntry) external virtual {}
+    function addedExternally(uint id, CelestialMapEntry memory mapEntry) external virtual {}
 
     // Build on this celestial, if allowed.
     // Call this stub when overriding this function - it checks that the celestial is a valid build
@@ -65,7 +47,7 @@ abstract contract Celestial {
     function build(address player, uint celestialID) public virtual {
         CelestialData storage _data = data(celestialID);
         require(_data.owner == address(0), "Trying to build on an already-built-on celestial");
-        emit Build(celestialX(celestialID), celestialY(celestialID), player, kind);
+        emit Build(celestialID, player, kind);
     }
 }
 

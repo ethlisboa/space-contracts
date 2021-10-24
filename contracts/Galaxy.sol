@@ -54,7 +54,7 @@ contract Galaxy is Ownable {
     function addCelestial(CelestialKind kind, uint128 x, uint128 y) public onlyOwner {
         CelestialMapEntry memory entry = CelestialMapEntry(kind, x, y);
         celestials.push(entry);
-        celestialManagers[kind].addedExternally(entry);
+        celestialManagers[kind].addedExternally(celestials.length, entry);
     }
 
     function addCelestials(
@@ -71,22 +71,6 @@ contract Galaxy is Ownable {
     }
 
     // ---------------------------------------------------------------------------------------------
-    // IDs
-
-    // Lets the frontend compute a celestial object ID from its coordinates.
-    function getCelestialID(uint x, uint y) pure external returns (uint) {
-        return x << 128 + y;
-    }
-
-    // Returns the x coordinate of the celestial object given its ID.
-    function celestialX(uint celestialID) pure external returns (uint) {
-        return celestialID >> 128;
-    }
-
-    // Returns the y coordinate of the celestial object given its ID.
-    function celestialY(uint celestialID) pure external returns (uint) {
-        return (celestialID << 128) >> 128;
-    }
 
     // ---------------------------------------------------------------------------------------------
 }
