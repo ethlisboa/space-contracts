@@ -3,14 +3,30 @@
 
 // From `Items.sol`
 export enum ItemKind {
+    // Resources
     IronOre,
     TerrestrialWood,
-    SpaceRaccoon
+    SpaceRaccoon,
+    // Factory-produced items
+    Charcoal,
+    Graphite,
+    PureDiamonds,
+    BlackSteel,
+    RaccoonLeather,
+    SaberHandle,
+    EnergyCrystal,
+    // Found items
+    EpicOpal
 }
 
 // From `Galaxy.sol`
 export enum CelestialKind {
-    Planet,     // produces TerrestrialWood
-    Asteroid,   // produces IronOre
-    Moon        // produces SpaceRaccoon
+    Planet,                 // produces TerrestrialWood
+    Asteroid,               // produces IronOre
+    Moon,                   // produces SpaceRaccoon
+    SpaceOven,              // produces Charcoal
+    GraphiteLabs,           // produces Graphite
+    DiamondCuttingStation,  // produces PureDiamonds
+    CyberFoundry,           // produces BlackSteel
+    RaccoonProcessingUnit   // produces RaccoonLeather
 }

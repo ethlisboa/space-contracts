@@ -25,19 +25,20 @@ enum ItemKind {
 
 contract Items is ERC1155("https://game.example/api/item/{id}.json"), Ownable  {
 
-    mapping(ItemKind => address) private minters;
+    // contracts authorized to mint and burn items
+    mapping(address => bool) private authorized;
 
-    function setMinter(ItemKind kind, address minter) external onlyOwner {
-        minters[kind] = minter;
+    function authorize(address _contract) external onlyOwner {
+        authorized[_contract] = true;
     }
 
     function mint(address player, ItemKind kind, uint amount, bytes memory data) external {
-        require(msg.sender == minters[kind], "wrong minter");
+        require(authorized[msg.sender], "unauthorized minter");
         _mint(player, uint(kind), amount, data);
     }
 
     function burn(address player, ItemKind kind, uint amount) external {
-        require(msg.sender == minters[kind], "wrong minter");
+        require(authorized[msg.sender], "unauthorized burner");
         _burn(player, uint(kind), amount);
     }
 }
